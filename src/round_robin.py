@@ -1,19 +1,22 @@
+from lib2to3.pgen2.token import tok_name
 import tkinter as tk
-from tkinter import Misc, Tk
+from tkinter import Menu, Tk
+from turtle import back
+
 
 class PWidget(tk.Widget):
 
-    def __init__(self, master: 'Misc | None', classname: str) -> None:
+    def __init__(self, master: 'tk.Misc | None', classname: str) -> None:
 
         tk.Widget.__init__(self, master, classname)
-        
+
         self.x = 0
         self.y = 0
-        self.Width = 0 # Default width
-        self.Height = 0 # Default height
-        self.Background = None # Default background
+        self.Width = 0  # Default width
+        self.Height = 0  # Default height
+        self.Background = None  # Default background
 
-    #Properties
+    # Properties
     @property
     def x(self):
         return self._x
@@ -49,12 +52,38 @@ class PWidget(tk.Widget):
     @property
     def Background(self):
         return self._bg
-    
+
     @Background.setter
     def Background(self, value: str):
         self['bg'] = self._bg = value
 
+class PMenuBarBase(tk.Widget):
+
+    def __init__(self, master: 'tk.Misc | None', classname: str) -> None:
+
+        tk.Widget.__init__(self, master, classname)
+
+    @property
+    def Title(self):
+        return self._title
+
+class PMenuBar(tk.Menu):
+    
+    def __init__(self):
+        super().__init__(tearoff=False)
+
 class PFrame(tk.Frame, PWidget):
+
+    @property
+    def MenuBar(self):
+        return self._menuBar
+
+    @MenuBar.setter
+    def MenuBar(self, value: PMenuBar):
+        if not isinstance(value, PMenuBar): raise TypeError('Has to be PMenuBar type')
+
+        self._menuBar = value
+        self._master.configure(menu=self._menuBar)
 
     @property
     def Title(self):
@@ -67,27 +96,49 @@ class PFrame(tk.Frame, PWidget):
 
     def __init__(self) -> None:
         self._master = Tk()
-        
+
         tk.Frame.__init__(self, self._master)
         PWidget.__init__(self, self._master, self.widgetName)
-        
+
         self.Title = "Simulación"
-        self.Width = 150 # Default width
-        self.Height = 0 # Default height
-        self.Background = "white" # Default background
-        
-        self.create_widgets() #InitComponents
+        self.Width = 150  # Default width
+        self.Height = 0  # Default height
+        self.Background = "white"  # Default background
+
+        self.MenuBar = PMenuBar()
+# see: https://recursospython.com/guias-y-manuales/barra-de-menu-tkinter/
+        fileMenu = tk.Menu(tearoff=False)
+
+        self.MenuBar.add_command(label='test', accelerator='Ctrl+T')
+
+        fileMenu.add_command(
+            label='Abrir',
+            accelerator='Ctrl+O',
+            command = lambda: print('Abriendo...')
+        )
+
+        fileMenu.add_command(
+            label='Guardar',
+            accelerator='Ctrl+S',
+            command = lambda: print('Guardando...')
+        )
+
+        self.MenuBar.add_cascade(label='Archivo', menu=fileMenu)
+
+        self.create_widgets()  # InitComponents
 
     def create_widgets(self):
         pass
 
     def add(self, widget: PWidget):
         widget.master = self
-        widget.place(x=widget.x, y=widget.y, width=widget.Width, height=widget.Height)
+        widget.place(x=widget.x, y=widget.y,
+                     width=widget.Width, height=widget.Height)
 
     def show(self):
         self.pack(fill='both')
         self.mainloop()
+
 
 class PPanel(tk.Frame, PWidget):
 
@@ -95,11 +146,12 @@ class PPanel(tk.Frame, PWidget):
 
         tk.Frame.__init__(self, None)
         PWidget.__init__(self, self.master, self.widgetName)
-        
-        self.Width = 10 # Default width
-        self.Height = 20 # Default height
-        self.Background = None # Default background
-    
+
+        self.Width = 10  # Default width
+        self.Height = 20  # Default height
+        self.Background = None  # Default background
+
     def add(self, widget: PWidget):
         widget.master = self
-        widget.place(x=widget.x, y=widget.y, width=widget.Width, height=widget.Height)
+        widget.place(x=widget.x, y=widget.y,
+                     width=widget.Width, height=widget.Height)
