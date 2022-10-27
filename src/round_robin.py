@@ -1,11 +1,5 @@
-
-from multiprocessing.forkserver import write_signed
 import tkinter as tk
 from tkinter import Misc, Tk
-from typing_extensions import TypeAlias
-
-_ScreenUnits: TypeAlias = 'str | float'
-_Color: TypeAlias = str
 
 class PWidget(tk.Widget):
 
@@ -25,7 +19,7 @@ class PWidget(tk.Widget):
         return self._x
 
     @x.setter
-    def x(self, value: _ScreenUnits) -> None:
+    def x(self, value: 'str | float') -> None:
         self._x = value
 
     @property
@@ -33,7 +27,7 @@ class PWidget(tk.Widget):
         return self._y
 
     @y.setter
-    def y(self, value: _ScreenUnits) -> None:
+    def y(self, value: 'str | float') -> None:
         self._y = value
 
     @property
@@ -41,7 +35,7 @@ class PWidget(tk.Widget):
         return self._width
 
     @Width.setter
-    def Width(self, value: _ScreenUnits) -> None:
+    def Width(self, value: 'str | float') -> None:
         self['width'] = self._width = value
 
     @property
@@ -49,7 +43,7 @@ class PWidget(tk.Widget):
         return self._width
 
     @Height.setter
-    def Height(self, value: _ScreenUnits) -> None:
+    def Height(self, value: 'str | float') -> None:
         self['height'] = self._height = value
 
     @property
@@ -57,7 +51,7 @@ class PWidget(tk.Widget):
         return self._bg
     
     @Background.setter
-    def Background(self, value: _Color):
+    def Background(self, value: str):
         self['bg'] = self._bg = value
 
 class PFrame(tk.Frame, PWidget):
