@@ -1,13 +1,8 @@
-from time import sleep
-from tkinter import *
-from Components.MainFrame import Frame
+from round_robin import Application
 
-class Main:
-    def __init__(self) -> None:
-        root = Tk()
+def main():
+    pass
+    
 
-        frame = Frame(root)
-
-        root.mainloop()
-
-Main()
+if __name__ == '__main__':
+    main()
