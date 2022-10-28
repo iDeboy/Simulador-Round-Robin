@@ -40,7 +40,26 @@ class PMenuBar(PMenuBase):
 # Hacer PLabel, PTextBox, PButton
 
 
+class PLabel(Label, PWidget):
+    pass
+
+
 class PPanel(Frame, PWidget):
+
+    @PWidget.Width.setter
+    def Width(self, value: 'str | float'):
+        self.Width = value
+        self.configure(width=value)
+
+    @PWidget.Height.setter
+    def Height(self, value: 'str | float'):
+        self.Height = value
+        self.configure(height=value)
+
+    @PWidget.Background.setter
+    def Background(self, value: str):
+        self.Background = value
+        self.configure(background=value)
 
     def __init__(self, x=0, y=0, width=20, height=20, background=None):
 
@@ -67,6 +86,21 @@ class PFrame(Frame, PWidget):
 
         self._menuBar = value
         self._master.configure(menu=self._menuBar.InternalMenu)
+
+    @PWidget.Width.setter
+    def Width(self, value: 'str | float'):
+        self.Width = value
+        self.configure(width=value)
+
+    @PWidget.Height.setter
+    def Height(self, value: 'str | float'):
+        self.Height = value
+        self.configure(height=value)
+
+    @PWidget.Background.setter
+    def Background(self, value: str):
+        self.Background = value
+        self.configure(background=value)
 
     @property
     def Title(self):
@@ -111,6 +145,9 @@ class PFrame(Frame, PWidget):
         panel = PPanel(x=50, y=50, width=50, height=100)
 
         self.add(panel)
+
+        lblTest = Label(self, text='Test')
+        lblTest.place(x=100, y=100)
 
     def show(self):
         self.pack(fill='both')

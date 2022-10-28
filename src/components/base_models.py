@@ -52,15 +52,15 @@ class PWidget(Widget):
 
     @Width.setter
     def Width(self, value: 'str | float') -> None:
-        self['width'] = self._width = value
+        self._width = value
 
     @property
     def Height(self):
-        return self._width
+        return self._height
 
     @Height.setter
     def Height(self, value: 'str | float') -> None:
-        self['height'] = self._height = value
+        self._height = value
 
     @property
     def Background(self):
@@ -68,7 +68,15 @@ class PWidget(Widget):
 
     @Background.setter
     def Background(self, value: str):
-        self['bg'] = self._bg = value
+        self._bg = value
+
+    @property
+    def Foreground(self):
+        return self._fg
+
+    @Foreground.setter
+    def Foreground(self, value: str):
+        self._fg = value
 
 
 class PMenuBase:
