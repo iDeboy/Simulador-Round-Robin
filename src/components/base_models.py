@@ -7,6 +7,7 @@ if __name__ == '__main__':
 else:
     import components.visual_models as Visuals
 
+
 class PWidget(Widget):
 
     def __init__(self, master: 'Misc | None', classname: str) -> None:
@@ -69,13 +70,14 @@ class PWidget(Widget):
     def Background(self, value: str):
         self['bg'] = self._bg = value
 
+
 class PMenuBase:
 
     @property
     def InternalMenu(self):
         return self._internalMenu
 
-    def __init__(self, title = 'Menu', accelerator = None, image = None, cmd = None) -> None:
+    def __init__(self, title='Menu', accelerator='', image=None, cmd=None) -> None:
         self._internalMenu = Menu(tearoff=False)
         self.Title = title
         self.Accelerator = accelerator
@@ -92,7 +94,6 @@ class PMenuBase:
             return self.InternalMenu.add_separator(menu.Background)
 
         raise TypeError('Type not supported.')
-        
 
     @property
     def Title(self):

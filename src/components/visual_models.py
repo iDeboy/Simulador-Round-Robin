@@ -22,13 +22,13 @@ class PMenuSeparator():
 
 class PMenuCommand(PMenuBase):
 
-    def __init__(self, title='MenuCommand', accelerator=None, image=None, cmd=None) -> None:
+    def __init__(self, title='MenuCommand', accelerator='', image=None, cmd=None) -> None:
         super().__init__(title, accelerator, image, cmd)
 
 
 class PMenuItem(PMenuBase):
 
-    def __init__(self, title='MenuItem', accelerator=None, image=None, cmd=None) -> None:
+    def __init__(self, title='MenuItem', accelerator='', image=None, cmd=None) -> None:
         super().__init__(title, accelerator, image, cmd)
 
 
@@ -38,6 +38,7 @@ class PMenuBar(PMenuBase):
         super().__init__(title='MainMenuBar')
 
 # Hacer PLabel, PTextBox, PButton
+
 
 class PPanel(Frame, PWidget):
 
@@ -108,7 +109,7 @@ class PFrame(Frame, PWidget):
         self.MenuBar.add(fileMenu)
 
         panel = PPanel(x=50, y=50, width=50, height=100)
- 
+
         self.add(panel)
 
     def show(self):
