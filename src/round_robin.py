@@ -3,6 +3,7 @@ from components.visual_models import *
 
 def main():
     f = PFrame()
+    f.Title = "Simulador"
     f.Width = 1000
     f.Height = 700
 

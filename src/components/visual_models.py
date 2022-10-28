@@ -5,22 +5,30 @@ if __name__ == '__main__':
 else:
     from components.base_models import *
 
-class PMenuBar(tk.Menu):
-    
+
+class PMenuCommand(PMenuBase):
+
+    def __init__(self, title='MenuCommand', accelerator=None, image=None, cmd=None) -> None:
+        super().__init__(title, accelerator, image, cmd)
+
+
+class PMenuItem(PMenuBase):
+
+    def __init__(self, title='MenuItem', accelerator=None, image=None, cmd=None) -> None:
+        super().__init__(title, accelerator, image, cmd)
+
+
+class PMenuBar(PMenuBase):
+
     def __init__(self):
-        super().__init__(tearoff=False)
+        super().__init__(title='MainMenuBar')
 
-    def addMenu(self, menu):
-        pass
 
-    def addCommand(self):
-        pass
-
-class PPanel(tk.Frame, PWidget):
+class PPanel(Frame, PWidget):
 
     def __init__(self):
 
-        tk.Frame.__init__(self, None)
+        Frame.__init__(self, None)
         PWidget.__init__(self, self.master, self.widgetName)
 
         self.Width = 10  # Default width
@@ -32,7 +40,8 @@ class PPanel(tk.Frame, PWidget):
         widget.place(x=widget.x, y=widget.y,
                      width=widget.Width, height=widget.Height)
 
-class PFrame(tk.Frame, PWidget):
+
+class PFrame(Frame, PWidget):
 
     @property
     def MenuBar(self):
@@ -40,10 +49,11 @@ class PFrame(tk.Frame, PWidget):
 
     @MenuBar.setter
     def MenuBar(self, value: PMenuBar):
-        if not isinstance(value, PMenuBar): raise TypeError('Has to be PMenuBar type')
+        if not isinstance(value, PMenuBar):
+            raise TypeError('Has to be PMenuBar type')
 
         self._menuBar = value
-        self._master.configure(menu=self._menuBar)
+        self._master.configure(menu=self._menuBar.InternalMenu)
 
     @property
     def Title(self):
@@ -57,38 +67,34 @@ class PFrame(tk.Frame, PWidget):
     def __init__(self) -> None:
         self._master = Tk()
 
-        tk.Frame.__init__(self, self._master)
+        Frame.__init__(self, self._master)
         PWidget.__init__(self, self._master, self.widgetName)
 
-        self.Title = "Simulación"
+        self.Title = "Main Window"
         self.Width = 150  # Default width
         self.Height = 0  # Default height
         self.Background = "white"  # Default background
 
-        self.MenuBar = PMenuBar()
         # see: https://recursospython.com/guias-y-manuales/barra-de-menu-tkinter/
-        fileMenu = tk.Menu(tearoff=False)
-
-        self.MenuBar.add_command(label='test', accelerator='Ctrl+T')
-
-        fileMenu.add_command(
-            label='Abrir',
-            accelerator='Ctrl+O',
-            command = lambda: print('Abriendo...')
-        )
-
-        fileMenu.add_command(
-            label='Guardar',
-            accelerator='Ctrl+S',
-            command = lambda: print('Guardando...')
-        )
-
-        self.MenuBar.add_cascade(label='Archivo', menu=fileMenu)
+        self.MenuBar = PMenuBar()
 
         self.create_widgets()  # InitComponents
 
     def create_widgets(self):
-        pass
+        fileMenu = PMenuItem(title='Archivo')
+
+
+        fileMenu.add(PMenuCommand(
+            title='Abrir',
+            cmd=lambda: print('Abriendo...')
+        ))
+
+        fileMenu.add(PMenuCommand(
+            title='Guardar',
+            cmd=lambda: print('Guardando...')
+        ))
+
+        self.MenuBar.add(fileMenu)
 
     def add(self, widget: PWidget):
         widget.master = self
