@@ -1,5 +1,5 @@
 from tkinter import *
-from typing import Callable
+from typing import Callable, Literal
 
 if __name__ == '__main__':
     import visual_models as Visuals
@@ -19,6 +19,9 @@ class PWidget(Widget):
         self.Width = 0          # Default width
         self.Height = 0         # Default height
         self.Background = None  # Default background
+        self.Foreground = 'black'
+        self.Title = 'PWidget'
+        self.Var = None
 
     def add(self, widget):
 
@@ -26,8 +29,7 @@ class PWidget(Widget):
             raise TypeError('Only PWidget type allowed.')
 
         widget.master = self
-        widget.place(x=widget.x, y=widget.y,
-                     width=widget.Width, height=widget.Height)
+        widget.place(x=widget.x, y=widget.y)
 
     # Properties
     @property
@@ -78,8 +80,32 @@ class PWidget(Widget):
     def Foreground(self, value: str):
         self._fg = value
 
+    @property
+    def Title(self):
+        return self._title
 
-class PMenuBase:
+    @Title.setter
+    def Title(self, value: str):
+        self._title = value
+
+    @property
+    def Var(self):
+        return self._var
+
+    @Var.setter
+    def Var(self, value: Variable):
+        self._var = value
+
+    @property
+    def Justify(self):
+        return self._justify
+
+    @Justify.setter
+    def Justify(self, value: Literal['normal', 'active', 'disabled']):
+        self._justify = value
+
+
+class PMenuBase():
 
     @property
     def InternalMenu(self):
@@ -109,7 +135,7 @@ class PMenuBase:
 
     @Title.setter
     def Title(self, value: str):
-        self._title = str(value)
+        self._title = value
 
     @property
     def Accelerator(self):
