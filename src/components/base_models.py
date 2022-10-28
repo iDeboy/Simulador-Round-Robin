@@ -9,7 +9,7 @@ else:
 
 class PWidget(Widget):
 
-    def __init__(self, master: 'tk.Misc | None', classname: str) -> None:
+    def __init__(self, master: 'Misc | None', classname: str) -> None:
 
         Widget.__init__(self, master, classname)
 
@@ -18,6 +18,15 @@ class PWidget(Widget):
         self.Width = 0          # Default width
         self.Height = 0         # Default height
         self.Background = None  # Default background
+
+    def add(self, widget):
+
+        if not isinstance(widget, PWidget):
+            raise TypeError('Only PWidget type allowed.')
+
+        widget.master = self
+        widget.place(x=widget.x, y=widget.y,
+                     width=widget.Width, height=widget.Height)
 
     # Properties
     @property
@@ -79,6 +88,8 @@ class PMenuBase:
             return self.InternalMenu.add_cascade(menu=menu.InternalMenu, label=menu.Title, accelerator=menu.Accelerator, image=menu.Image, command=menu.Command)
         elif isinstance(menu, Visuals.PMenuCommand):
             return self.InternalMenu.add_command(label=menu.Title, accelerator=menu.Accelerator, image=menu.Image, command=menu.Command)
+        elif isinstance(menu, Visuals.PMenuSeparator):
+            return self.InternalMenu.add_separator(menu.Background)
 
         raise TypeError('Type not supported.')
         
