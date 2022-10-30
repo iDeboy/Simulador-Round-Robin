@@ -22,13 +22,13 @@ class PMenuSeparator():
 
 class PMenuCommand(PMenuBase):
 
-    def __init__(self, title='MenuCommand', accelerator=None, image=None, cmd=None) -> None:
+    def __init__(self, title='MenuCommand', accelerator='', image=None, cmd=None) -> None:
         super().__init__(title, accelerator, image, cmd)
 
 
 class PMenuItem(PMenuBase):
 
-    def __init__(self, title='MenuItem', accelerator=None, image=None, cmd=None) -> None:
+    def __init__(self, title='MenuItem', accelerator='', image=None, cmd=None) -> None:
         super().__init__(title, accelerator, image, cmd)
 
 
@@ -40,7 +40,95 @@ class PMenuBar(PMenuBase):
 # Hacer PLabel, PTextBox, PButton
 
 
+class PLabel(Label, PWidget):
+
+    @property
+    def Title(self):
+        return super().Title
+
+    @Title.setter
+    def Title(self, value: str):
+        self._title = value
+        self.configure(text=value)
+
+    @property
+    def Var(self):
+        return super().Var
+
+    @Var.setter
+    def Var(self, value: Variable):
+        self._var = value
+        self.configure(textvariable=value)
+
+    @property
+    def Background(self):
+        return super().Background
+
+    @Background.setter
+    def Background(self, value: str):
+        self._bg = value
+        self.configure(background=value)
+
+    @property
+    def Foreground(self):
+        return super().Foreground
+
+    @Foreground.setter
+    def Foreground(self, value: str):
+        self._fg = value
+        self.configure(foreground=value)
+
+    @property
+    def Justify(self):
+        return super().Justify
+
+    @Justify.setter
+    def Justify(self, value: Literal['normal', 'active', 'disabled']):
+        self._justify = value
+        self.configure(justify=value)
+
+    def __init__(self, title='', variable=None, x=0, y=0, background=None, foreground='black'):
+        Label.__init__(self, None)
+        PWidget.__init__(self, self.master, self.widgetName)
+
+        self.Title = title
+        self.Var = variable
+        self.x = x
+        self.y = y
+        self.Background = background
+        self.Foreground = foreground
+
+        self.configure(text='', )
+
+
 class PPanel(Frame, PWidget):
+
+    @property
+    def Width(self):
+        return super().Width
+
+    @Width.setter
+    def Width(self, value: 'str | float'):
+        self._width = value
+        self.configure(width=value)
+
+    @property
+    def Height(self):
+        return super().Height
+
+    @Height.setter
+    def Height(self, value: 'str | float'):
+        self._height = value
+        self.configure(height=value)
+
+    @property
+    def Background(self):
+        return super().Background
+
+    @Background.setter
+    def Background(self, value: str):
+        self._bg = value
+        self.configure(background=value)
 
     def __init__(self, x=0, y=0, width=20, height=20, background=None):
 
@@ -69,12 +157,39 @@ class PFrame(Frame, PWidget):
         self._master.configure(menu=self._menuBar.InternalMenu)
 
     @property
+    def Width(self):
+        return super().Width
+
+    @Width.setter
+    def Width(self, value: 'str | float'):
+        self._width = value
+        self.configure(width=value)
+
+    @property
+    def Height(self):
+        return super().Height
+
+    @Height.setter
+    def Height(self, value: 'str | float'):
+        self._height = value
+        self.configure(height=value)
+
+    @property
+    def Background(self):
+        return super().Background
+
+    @Background.setter
+    def Background(self, value: str):
+        self._background = value
+        self.configure(background=value)
+
+    @property
     def Title(self):
-        return self._title
+        return super().Title
 
     @Title.setter
     def Title(self, value: str):
-        self._title = str(value)
+        self._title = value
         self._master.title(self._title)
 
     def __init__(self, title='Main Window', width=150, height=0, background='white') -> None:
@@ -111,6 +226,9 @@ class PFrame(Frame, PWidget):
         panel = PPanel(x=50, y=50, width=50, height=100)
 
         self.add(panel)
+
+        lblTest = Label(self, text='Test')
+        lblTest.place(x=100, y=100)
 
     def show(self):
         self.pack(fill='both')
