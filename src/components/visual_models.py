@@ -39,6 +39,7 @@ class PMenuBar(PMenuBase):
 
 # Hacer PLabel, PTextBox, PButton
 
+
 class PPanel(Frame, PWidget):
 
     def __init__(self, x=0, y=0, width=20, height=20, background=None):
@@ -108,7 +109,7 @@ class PFrame(Frame, PWidget):
         self.MenuBar.add(fileMenu)
 
         panel = PPanel(x=50, y=50, width=50, height=100)
- 
+
         self.add(panel)
 
     def show(self):
