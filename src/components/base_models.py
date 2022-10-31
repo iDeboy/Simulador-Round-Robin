@@ -1,3 +1,4 @@
+from math import fabs
 from tkinter import *
 from typing import Callable, Literal
 
@@ -21,7 +22,10 @@ class PWidget(Widget):
         self.Background = None  # Default background
         self.Foreground = 'black'
         self.Title = 'PWidget'
-        self.Var = None
+        self.BorderWidth = 0
+        self.Relief = GROOVE
+        self.Command = None
+        self.State = NORMAL
 
     def add(self, widget):
 
@@ -29,7 +33,22 @@ class PWidget(Widget):
             raise TypeError('Only PWidget type allowed.')
 
         widget.master = self
+
         widget.place(x=widget.x, y=widget.y)
+
+    def has_resource(self, resource_name: str) -> bool:
+        try:
+            self[resource_name]
+            return True
+        except TclError:
+            pass
+
+        return False
+
+    def set_resource(self, resource_name: str, value):
+
+        if self.has_resource(resource_name):
+            self[resource_name] = value
 
     # Properties
     @property
@@ -55,6 +74,7 @@ class PWidget(Widget):
     @Width.setter
     def Width(self, value: 'str | float') -> None:
         self._width = value
+        self.set_resource('width', value)
 
     @property
     def Height(self):
@@ -63,6 +83,7 @@ class PWidget(Widget):
     @Height.setter
     def Height(self, value: 'str | float') -> None:
         self._height = value
+        self.set_resource('height', value)
 
     @property
     def Background(self):
@@ -71,6 +92,7 @@ class PWidget(Widget):
     @Background.setter
     def Background(self, value: str):
         self._bg = value
+        self.set_resource('background', value)
 
     @property
     def Foreground(self):
@@ -79,22 +101,18 @@ class PWidget(Widget):
     @Foreground.setter
     def Foreground(self, value: str):
         self._fg = value
+        self.set_resource('foreground', value)
 
     @property
     def Title(self):
-        return self._title
+        return self._title.get()
 
     @Title.setter
     def Title(self, value: str):
-        self._title = value
+        self._title = Variable(value=value)
 
-    @property
-    def Var(self):
-        return self._var
-
-    @Var.setter
-    def Var(self, value: Variable):
-        self._var = value
+        self.set_resource('text', value)
+        self.set_resource('textvariable', self._title)
 
     @property
     def Justify(self):
@@ -103,7 +121,52 @@ class PWidget(Widget):
     @Justify.setter
     def Justify(self, value: Literal['normal', 'active', 'disabled']):
         self._justify = value
+        self.set_resource('justify', value)
 
+    @property
+    def BorderWidth(self):
+        return self._borderwidth
+
+    @BorderWidth.setter
+    def BorderWidth(self, value: 'str | float'):
+        self._borderwidth = value
+        self.set_resource('borderwidth', value)
+
+    @property
+    def Relief(self):
+        return self._relief
+
+    @Relief.setter
+    def Relief(self, value: Literal['raised', 'sunken', 'flat', 'ridge', 'solid', 'groove']):
+        self._relief = value
+        self.set_resource('relief', value)
+
+    @property
+    def Command(self):
+        return self._cmd
+
+    @Command.setter
+    def Command(self, value: 'str | Callable[[]]'):
+        self._cmd = value
+        self.set_resource('command', value)
+
+    @property
+    def Cursor(self):
+        return self._cursor
+
+    @Cursor.setter
+    def Cursor(self, value: str):
+        self._cursor = value
+        self.set_resource('cursor', value)
+
+    @property
+    def State(self):
+        return self._state
+
+    @State.setter
+    def State(self, value: Literal["normal", "disabled", "readonly"]):
+        self._state = value
+        self.set_resource('state', value)
 
 class PMenuBase():
 
@@ -111,23 +174,32 @@ class PMenuBase():
     def InternalMenu(self):
         return self._internalMenu
 
-    def __init__(self, title='Menu', accelerator='', image=None, cmd=None) -> None:
+    def __init__(self, title='Menu', accelerator='', image=None, cmd=None, state = NORMAL) -> None:
         self._internalMenu = Menu(tearoff=False)
         self.Title = title
         self.Accelerator = accelerator
         self.Image = image
         self.Command = cmd
+        self.State = state
 
     def add(self, menu) -> None:
 
         if isinstance(menu, Visuals.PMenuItem):
-            return self.InternalMenu.add_cascade(menu=menu.InternalMenu, label=menu.Title, accelerator=menu.Accelerator, image=menu.Image, command=menu.Command)
+            return self.InternalMenu.add_cascade(menu=menu.InternalMenu, label=menu.Title, accelerator=menu.Accelerator, image=menu.Image, command=menu.Command, state=menu.State)
         elif isinstance(menu, Visuals.PMenuCommand):
-            return self.InternalMenu.add_command(label=menu.Title, accelerator=menu.Accelerator, image=menu.Image, command=menu.Command)
+            return self.InternalMenu.add_command(label=menu.Title, accelerator=menu.Accelerator, image=menu.Image, command=menu.Command, state=menu.State)
         elif isinstance(menu, Visuals.PMenuSeparator):
             return self.InternalMenu.add_separator(menu.Background)
 
         raise TypeError('Type not supported.')
+
+    @property
+    def State(self):
+        return self._state
+
+    @State.setter
+    def State(self, value: Literal["normal", "disabled", "readonly"]):
+        self._state = value
 
     @property
     def Title(self):

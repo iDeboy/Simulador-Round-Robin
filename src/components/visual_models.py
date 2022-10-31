@@ -1,4 +1,7 @@
 
+from tkinter.ttk import Treeview
+
+
 if __name__ == '__main__':
     from base_models import *
     print('Visual models definition.')
@@ -14,9 +17,9 @@ class PMenuSeparator():
 
     @Background.setter
     def Background(self, value: str):
-        self._bg = str(value)
+        self._bg = value
 
-    def __init__(self, background=None) -> None:
+    def __init__(self, background='black') -> None:
         self.Background = background
 
 
@@ -32,103 +35,145 @@ class PMenuItem(PMenuBase):
         super().__init__(title, accelerator, image, cmd)
 
 
+class PDataGridColumn():
+    
+    @property
+    def Id(self):
+        return self._id
+
+    @Id.setter
+    def Id(self, value: str):
+        self._id = value
+
+    @property
+    def Name(self):
+        return self._name
+
+    @Name.setter
+    def Name(self, value: str):
+        self._name = value
+
+    @property
+    def Values(self):
+        return self._values
+
+    @property
+    def Width(self):
+        return self._width
+
+    @Width.setter
+    def Width(self, value: int):
+        self._width = int(value)
+
+    @property
+    def MinWidth(self):
+        return self._minwidth
+
+    @MinWidth.setter
+    def MinWidth(self, value: int):
+        self._minwidth = int(value)
+
+    def __init__(self, id: str, name: str, width = 80, minwidth = 30) -> None:
+        
+        self._values = list()
+        self.Id = id
+        self.Name = name
+        self.Width = width
+        self.MinWidth = minwidth
+
+    def __str__(self) -> str:
+        return '{\n'+f'\tId: \'{self.Id}\'\n\tName: \'{self.Name}\'\n\tValues: {self.Values}\n\tWidth: {self.Width}\n\tMinWidth: {self.MinWidth}' + '\n}'
+
+class PDataGrid(Treeview, PWidget):
+
+    @property
+    def Columns(self) -> dict:
+        return self._columns
+
+    def __init__(self, x=0, y=0):
+        Treeview.__init__(self)
+        PWidget.__init__(self, self.master, self.widgetName)
+
+        self._columns = dict()
+        self._index = 0
+
+        self.x = x
+        self.y = y
+
+    def add_column(self, name: str, width = 80, minwidth = 30):
+        col = PDataGridColumn(f'#{self._index}', str(name), width, minwidth)
+        self.Columns[col.Id] = col
+        self._index += 1
+
+        keys = list(self.Columns)
+        keys.remove('#0')
+
+        self.configure(columns=keys)
+
+    #Crear clase PDataGridRow
+    def add_row(self, values: list):
+        pass
+        
+
 class PMenuBar(PMenuBase):
 
     def __init__(self):
         super().__init__(title='MainMenuBar')
 
-# Hacer PLabel, PTextBox, PButton
 
+class PButton(Button, PWidget):
 
-class PLabel(Label, PWidget):
-
-    @property
-    def Title(self):
-        return super().Title
-
-    @Title.setter
-    def Title(self, value: str):
-        self._title = value
-        self.configure(text=value)
-
-    @property
-    def Var(self):
-        return super().Var
-
-    @Var.setter
-    def Var(self, value: Variable):
-        self._var = value
-        self.configure(textvariable=value)
-
-    @property
-    def Background(self):
-        return super().Background
-
-    @Background.setter
-    def Background(self, value: str):
-        self._bg = value
-        self.configure(background=value)
-
-    @property
-    def Foreground(self):
-        return super().Foreground
-
-    @Foreground.setter
-    def Foreground(self, value: str):
-        self._fg = value
-        self.configure(foreground=value)
-
-    @property
-    def Justify(self):
-        return super().Justify
-
-    @Justify.setter
-    def Justify(self, value: Literal['normal', 'active', 'disabled']):
-        self._justify = value
-        self.configure(justify=value)
-
-    def __init__(self, title='', variable=None, x=0, y=0, background=None, foreground='black'):
-        Label.__init__(self, None)
+    def __init__(self, title='Button', x=0, y=0, background=None, foreground='black', justify='left', borderwidth=3, relief='groove', cmd=None):
+        Button.__init__(self, None)
         PWidget.__init__(self, self.master, self.widgetName)
 
         self.Title = title
-        self.Var = variable
         self.x = x
         self.y = y
         self.Background = background
         self.Foreground = foreground
+        self.Justify = justify
+        self.BorderWidth = borderwidth
+        self.Relief = relief
+        self.Cursor = 'hand2'
+        self.Command = cmd
 
-        self.configure(text='', )
+
+class PTextBox(Entry, PWidget):
+
+    def __init__(self, title='', x=0, y=0, background=None, foreground='black', justify='left', width=30, borderwidth=3, relief='groove'):
+        Entry.__init__(self, None)
+        PWidget.__init__(self, self.master, self.widgetName)
+
+        self.Title = title
+        self.x = x
+        self.y = y
+        self.Background = background
+        self.Foreground = foreground
+        self.Justify = justify
+        self.Width = width
+        self.BorderWidth = borderwidth
+        self.Relief = relief
+
+    def clear(self):
+        self.Title = ''
+
+
+class PLabel(Label, PWidget):
+
+    def __init__(self, title='Label', x=0, y=0, background=None, foreground='black', justify='left'):
+        Label.__init__(self, None)
+        PWidget.__init__(self, self.master, self.widgetName)
+
+        self.Title = title
+        self.x = x
+        self.y = y
+        self.Background = background
+        self.Foreground = foreground
+        self.Justify = justify
 
 
 class PPanel(Frame, PWidget):
-
-    @property
-    def Width(self):
-        return super().Width
-
-    @Width.setter
-    def Width(self, value: 'str | float'):
-        self._width = value
-        self.configure(width=value)
-
-    @property
-    def Height(self):
-        return super().Height
-
-    @Height.setter
-    def Height(self, value: 'str | float'):
-        self._height = value
-        self.configure(height=value)
-
-    @property
-    def Background(self):
-        return super().Background
-
-    @Background.setter
-    def Background(self, value: str):
-        self._bg = value
-        self.configure(background=value)
 
     def __init__(self, x=0, y=0, width=20, height=20, background=None):
 
@@ -157,33 +202,6 @@ class PFrame(Frame, PWidget):
         self._master.configure(menu=self._menuBar.InternalMenu)
 
     @property
-    def Width(self):
-        return super().Width
-
-    @Width.setter
-    def Width(self, value: 'str | float'):
-        self._width = value
-        self.configure(width=value)
-
-    @property
-    def Height(self):
-        return super().Height
-
-    @Height.setter
-    def Height(self, value: 'str | float'):
-        self._height = value
-        self.configure(height=value)
-
-    @property
-    def Background(self):
-        return super().Background
-
-    @Background.setter
-    def Background(self, value: str):
-        self._background = value
-        self.configure(background=value)
-
-    @property
     def Title(self):
         return super().Title
 
@@ -194,7 +212,7 @@ class PFrame(Frame, PWidget):
 
     def __init__(self, title='Main Window', width=150, height=0, background='white') -> None:
         self._master = Tk()
-
+        self._master.resizable(False, False)
         Frame.__init__(self, self._master)
         PWidget.__init__(self, self._master, self.widgetName)
 
@@ -206,9 +224,9 @@ class PFrame(Frame, PWidget):
         # see: https://recursospython.com/guias-y-manuales/barra-de-menu-tkinter/
         self.MenuBar = PMenuBar()
 
-        self.create_widgets()  # InitComponents
+        # self.create_widgets()  # InitComponents
 
-    def create_widgets(self):
+    def test_create_widgets(self):
         fileMenu = PMenuItem(title='Archivo')
 
         fileMenu.add(PMenuCommand(
@@ -225,11 +243,21 @@ class PFrame(Frame, PWidget):
 
         panel = PPanel(x=50, y=50, width=50, height=100)
 
+        lblTest = PLabel(title='Test', x=500, y=100,
+                         foreground='red', background=self.Background)
+
+        txtBoxTest = PTextBox(x=100, y=100)
+
+        btnTest = PButton(title='Limpiar', x=100, y=150)
+
+        self.add(btnTest)
+
+        self.add(txtBoxTest)
+
+        self.add(lblTest)
+
         self.add(panel)
 
-        lblTest = Label(self, text='Test')
-        lblTest.place(x=100, y=100)
-
     def show(self):
-        self.pack(fill='both')
+        self.pack(fill=BOTH, expand=TRUE)
         self.mainloop()
