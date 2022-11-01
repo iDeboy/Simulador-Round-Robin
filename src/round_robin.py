@@ -1,8 +1,17 @@
 
+from decimal import ROUND_HALF_UP, Decimal
 import random
 from time import sleep
 from components.visual_models import *
 from process import Process, READY, FINISHED, BLOCKED, RUNNING
+
+
+def round_well(num: float):
+    return int(Decimal(num).quantize(0, ROUND_HALF_UP))
+
+
+def round_str(str: str):
+    return round_well(len(str)/2)
 
 
 class RoundRobin(PFrame):
@@ -32,7 +41,7 @@ class RoundRobin(PFrame):
         self._currentProcess = value
 
     def __init__(self):
-        super().__init__('Simulador', 800, 600)
+        super().__init__('Simulador', 1000, 600)
 
         self._processList = list()
         self._readyProcesses = list()
@@ -58,43 +67,68 @@ class RoundRobin(PFrame):
 
         self.MenuBar.add(fileMenu)
 
-        # Label para la aprte de agregar procesos
-        self.add(PLabel(title='Agregar procesos:', x=200,
-                 y=50, background=self.Background))
+        posX = 20
+        posY = 20
 
+        # Label para la aprte de agregar procesos
+        self.add(PLabel(title='Agregar procesos:', x=posX,
+                 y=posY, background=self.Background))
+
+        lblNomY = posY + 50
+        lblNomX = posX
         # Label para el TextBox nombre del proceso
-        self.add(PLabel(title='Nombre:', x=200,
-                 y=100, background=self.Background))
-        self.txtBoxNombreProc = PTextBox(x=200, y=130, width=15)
+        self.add(PLabel(title='Nombre:', x=lblNomX,
+                 y=lblNomY, background=self.Background))
+
+        txtNomX = lblNomX
+        txtNomY = lblNomY + 30
+        self.txtBoxNombreProc = PTextBox(x=txtNomX, y=txtNomY, width=15)
         self.add(self.txtBoxNombreProc)
 
         # Label para el TextBox tiempo del proceso
-        self.add(PLabel(title='Tiempo:', x=350,
-                 y=100, background=self.Background))
+        lblTimeX = lblNomX + 200
+        lblTimeY = lblNomY
+        self.add(PLabel(title='Tiempo:', x=lblTimeX,
+                 y=lblTimeY, background=self.Background))
 
-        self.txtBoxTiempoProc = PTextBox(x=350, y=130, width=15)
+        txtTimeX = lblTimeX
+        txtTimeY = lblTimeY + 30
+        self.txtBoxTiempoProc = PTextBox(x=txtTimeX, y=txtTimeY, width=15)
         self.add(self.txtBoxTiempoProc)
 
+        cbPosX = txtTimeX + 200
+        cbPosY = txtTimeY
         self.cbEntradaSalida = PCheckBox(
-            'Entrada/Salida', x=460, y=130, background=self.Background)
+            'Entrada/Salida', x=cbPosX, y=cbPosY, background=self.Background)
         self.add(self.cbEntradaSalida)
 
+        lblErrorX = lblNomX
+        lblErrorY = txtNomY + 35
         self.lblErrorProc = PLabel(
-            '', x=200, y=160, background=self.Background, foreground='red')
+            '', x=lblErrorX, y=lblErrorY, background=self.Background, foreground='red')
 
         self.add(self.lblErrorProc)
 
-        self.btnAddProc = PButton('Agregar', x=290, y=190, cmd=self.add_proc)
+        btnAddX = txtTimeX - 70
+        btnAddY = lblErrorY + 30
+        self.btnAddProc = PButton(
+            'Agregar', x=btnAddX, y=btnAddY, cmd=self.add_proc)
         self.add(self.btnAddProc)
 
-        self.add(PLabel(title='Quantum:', x=500,
-                 y=50, background=self.Background))
+        self.lblQuantumX = cbPosX
+        self.lblQuantumY = posY
+        self.add(PLabel(title='Quantum:', x=self.lblQuantumX,
+                 y=self.lblQuantumY, background=self.Background))
 
-        self.txtBoxQuantum = PTextBox(x=560, y=50, width=15)
+        txtQuantumX = self.lblQuantumX + 90
+        txtQuantumY = self.lblQuantumY
+        self.txtBoxQuantum = PTextBox(x=txtQuantumX, y=txtQuantumY, width=15)
         self.add(self.txtBoxQuantum)
 
+        lblErrorQuantumX = self.lblQuantumX
+        lblErrorQuantumY = txtQuantumY + 40
         self.lblErrorQuantum = PLabel(
-            '', x=500, y=70, background=self.Background, foreground='red')
+            '', x=lblErrorQuantumX, y=lblErrorQuantumY, background=self.Background, foreground='red')
         self.add(self.lblErrorQuantum)
 
         self.btnIniciar = PMenuCommand('Iniciar', cmd=self.start)
@@ -166,24 +200,42 @@ class RoundRobin(PFrame):
         self.quantum = int(quantum)
         self._readyProcesses = self.ProcessList
 
-        self.add(PPanel(x=290, y=245, width=100, height=26 +
-                 25*len(self.ProcessList), borderwidth=3))
-        self.add(PLabel('Listo', x=325, y=250))
+        self.pnlReadyX = 290
+        self.pnlReadyY = 245
+        width = 150
+        height = 35
+        count_listprocess = len(self.ProcessList)
 
-        self.add(PPanel(x=400, y=245, width=100, height=26 +
+        self.add(PPanel(x=self.pnlReadyX, y=self.pnlReadyY, width=width, height=height +
+                 25*count_listprocess, borderwidth=3))
+        self.add(PLabel('Listo', x=self.pnlReadyX + width //
+                 round_str('Listo'), y=self.pnlReadyY + 10))
+
+        self.pnlRunningX = self.pnlReadyX + width + 10
+        self.pnlRunningY = self.pnlReadyY
+        self.add(PPanel(x=self.pnlRunningX, y=self.pnlRunningY, width=width, height=height +
                  25*1, borderwidth=3))
-        self.add(PLabel('Corriendo', x=423, y=250))
+        self.add(PLabel('Corriendo', x=self.pnlRunningX + width //
+                 round_str('Corriendo'), y=self.pnlRunningY + 10))
 
-        self.add(PPanel(x=510, y=245, width=100, height=26 +
-                 25*len(self.ProcessList), borderwidth=3))
-        self.add(PLabel('Terminado', x=530, y=250))
+        self.pnlFinishedX = self.pnlRunningX + width + 10
+        self.pnlFinishedY = self.pnlRunningY
+        self.add(PPanel(x=self.pnlFinishedX, y=self.pnlFinishedY, width=width, height=height +
+                 25*count_listprocess, borderwidth=3))
+        self.add(PLabel('Terminado', x=self.pnlFinishedX + width //
+                 round_str('Terminado'), y=self.pnlFinishedY + 10))
 
-        self.add(PPanel(x=620, y=245, width=100, height=26 +
-                 25*len(self.ProcessList), borderwidth=3))
-        self.add(PLabel('Bloqueado', x=640, y=250))
+        self.pnlBlockedX = self.pnlFinishedX + width + 10
+        self.pnlBlockedY = self.pnlFinishedY
+        self.add(PPanel(x=self.pnlBlockedX, y=self.pnlBlockedY, width=width, height=height +
+                 25*count_listprocess, borderwidth=3))
+        self.add(PLabel('Bloqueado', x=self.pnlBlockedX + width //
+                 round_str('Bloqueado'), y=self.pnlBlockedY + 10))
 
+        self.lblQuantumX = self.pnlRunningX + 100
+        self.lblQuantumY = self.pnlRunningY - 30
         self.lblQuantum = PLabel(
-            f'Quantum: {self.quantum}', x=450, y=215, background=self.Background)
+            f'Quantum: {self.quantum}', x=self.lblQuantumX, y=self.lblQuantumY, background=self.Background)
 
         self.add(self.lblQuantum)
 
@@ -205,7 +257,8 @@ class RoundRobin(PFrame):
 
             # Revisar si hay procesos listos
             self.revisar_procesos_listos()
-            if i == aux + 2: self.revisar_procesos_bloqueados()
+            if i == aux + 2:
+                self.revisar_procesos_bloqueados()
 
             self.cargar_procesos(False)
 
@@ -223,10 +276,8 @@ class RoundRobin(PFrame):
                     triggerES = random.randint(
                         0, min(self.quantum, self.CurrentProcess.ActualQuantum))
 
-                    print(f'{triggerES=}')
-
                     e_s = True
-                if self.CurrentProcess.IsInputOutput: print(f'{min(x + 1, self.CurrentProcess.ActualQuantum)=}')
+                    
                 # Interrupción E/S
                 if e_s and min(x + 1, self.CurrentProcess.ActualQuantum) == triggerES and not self.CurrentProcess.HasBlocked:
                     self.CurrentProcess.State = BLOCKED
@@ -288,7 +339,7 @@ class RoundRobin(PFrame):
 
         print(f'Ejecutando: {self.CurrentProcess.Name}')
 
-        self.lblRunning = PLabel(self.CurrentProcess.Name, x=410, y=270)
+        self.lblRunning = PLabel(self.CurrentProcess.Name, x=self.pnlRunningX + 10, y=self.pnlRunningY + 30)
         self.add(self.lblRunning)
 
     def revisar_procesos_bloqueados(self):
@@ -324,7 +375,7 @@ class RoundRobin(PFrame):
         self.lblsReady = list()
 
         for p in self.ReadyProcesses:
-            self.lblsReady.append(PLabel(p.Name, x=300, y=250 + 20*i))
+            self.lblsReady.append(PLabel(p.Name, x=self.pnlReadyX + 10, y=self.pnlReadyY + 10 + 20*i))
             i += 1
 
         # Cargar los procesos
@@ -347,7 +398,7 @@ class RoundRobin(PFrame):
         self.lblsBlocked = list()
 
         for p in self.BlockedProcesses:
-            self.lblsBlocked.append(PLabel(p.Name, x=630, y=250 + 20*i))
+            self.lblsBlocked.append(PLabel(p.Name, x=self.pnlBlockedX + 10, y=self.pnlBlockedX + 10 + 20*i))
             i += 1
 
         # Cargar los procesos
@@ -369,7 +420,7 @@ class RoundRobin(PFrame):
         self.lblsFinished = list()
 
         for p in self.FinishedProcesses:
-            self.lblsFinished.append(PLabel(p.Name, x=520, y=250 + 20*i))
+            self.lblsFinished.append(PLabel(p.Name, x=self.pnlFinishedX + 10, y=self.pnlFinishedY + 10 + 20*i))
             i += 1
 
         # Cargar los procesos
