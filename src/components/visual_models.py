@@ -1,7 +1,6 @@
 
 from tkinter.ttk import Treeview
 
-
 if __name__ == '__main__':
     from base_models import *
     print('Visual models definition.')
@@ -36,7 +35,7 @@ class PMenuItem(PMenuBase):
 
 
 class PDataGridColumn():
-    
+
     @property
     def Id(self):
         return self._id
@@ -54,10 +53,6 @@ class PDataGridColumn():
         self._name = value
 
     @property
-    def Values(self):
-        return self._values
-
-    @property
     def Width(self):
         return self._width
 
@@ -73,47 +68,88 @@ class PDataGridColumn():
     def MinWidth(self, value: int):
         self._minwidth = int(value)
 
-    def __init__(self, id: str, name: str, width = 80, minwidth = 30) -> None:
-        
-        self._values = list()
+    def __init__(self, id: str, name: str, width=80, minwidth=30) -> None:
+
         self.Id = id
         self.Name = name
         self.Width = width
         self.MinWidth = minwidth
 
     def __str__(self) -> str:
-        return '{\n'+f'\tId: \'{self.Id}\'\n\tName: \'{self.Name}\'\n\tValues: {self.Values}\n\tWidth: {self.Width}\n\tMinWidth: {self.MinWidth}' + '\n}'
+        return '{\n'+f'\tId: \'{self.Id}\'\n\tName: \'{self.Name}\n\tWidth: {self.Width}\n\tMinWidth: {self.MinWidth}' + '\n}'
+
 
 class PDataGrid(Treeview, PWidget):
 
     @property
-    def Columns(self) -> dict:
+    def Columns(self):
         return self._columns
+
+    @property
+    def Rows(self):
+        return self._rows
 
     def __init__(self, x=0, y=0):
         Treeview.__init__(self)
         PWidget.__init__(self, self.master, self.widgetName)
 
         self._columns = dict()
+        self._rows = list()
         self._index = 0
 
         self.x = x
         self.y = y
 
-    def add_column(self, name: str, width = 80, minwidth = 30):
+    def add_column(self, name: str, width=80, minwidth=30):
         col = PDataGridColumn(f'#{self._index}', str(name), width, minwidth)
         self.Columns[col.Id] = col
         self._index += 1
 
         keys = list(self.Columns)
-        keys.remove('#0')
+        if '#0' in keys:
+            keys.remove('#0')
 
         self.configure(columns=keys)
 
-    #Crear clase PDataGridRow
+        for column in self.Columns.values():
+            self.column(column.Id, width=column.Width,
+                        anchor=CENTER, minwidth=column.MinWidth)
+            self.heading(column.Id, text=column.Name)
+
     def add_row(self, values: list):
-        pass
-        
+
+        if len(values) != len(self.Columns):
+            raise ValueError('Error al insertar datos')
+
+        self.Rows.append(values)
+
+        self.insert('', END, text=values[0], values=values[1:])
+
+        self.__add__()
+
+    def __add__(self):
+        self.place(x=self.x, y=self.y, height=26 + 20*len(self.Rows))
+
+
+class PCheckBox(Checkbutton, PWidget):
+
+    def __init__(self, title='CheckBox', x=0, y=0, background=None, foreground='black', justify='left', relief='groove'):
+
+        Checkbutton.__init__(self)
+        PWidget.__init__(self, self.master, self.widgetName)
+
+        self.Title = title
+        self.x = x
+        self.y = y
+        self.Value = False
+        self.Background = background
+        self.Foreground = foreground
+        self.Justify = justify
+        self.Relief = relief
+
+    def __add__(self):
+        self.place(x=self.x, y=self.y)
+
 
 class PMenuBar(PMenuBase):
 
@@ -138,6 +174,9 @@ class PButton(Button, PWidget):
         self.Cursor = 'hand2'
         self.Command = cmd
 
+    def __add__(self):
+        self.place(x=self.x, y=self.y)
+
 
 class PTextBox(Entry, PWidget):
 
@@ -158,6 +197,9 @@ class PTextBox(Entry, PWidget):
     def clear(self):
         self.Title = ''
 
+    def __add__(self):
+        self.place(x=self.x, y=self.y)
+
 
 class PLabel(Label, PWidget):
 
@@ -172,10 +214,13 @@ class PLabel(Label, PWidget):
         self.Foreground = foreground
         self.Justify = justify
 
+    def __add__(self):
+        self.place(x=self.x, y=self.y)
+
 
 class PPanel(Frame, PWidget):
 
-    def __init__(self, x=0, y=0, width=20, height=20, background=None):
+    def __init__(self, x=0, y=0, width=20, height=20, background=None, borderwidth = 0):
 
         Frame.__init__(self, None)
         PWidget.__init__(self, self.master, self.widgetName)
@@ -185,6 +230,10 @@ class PPanel(Frame, PWidget):
         self.Width = width              # Default width
         self.Height = height            # Default height
         self.Background = background    # Default background
+        self.BorderWidth = borderwidth
+
+    def __add__(self):
+        self.place(x=self.x, y=self.y)
 
 
 class PFrame(Frame, PWidget):
@@ -261,3 +310,6 @@ class PFrame(Frame, PWidget):
     def show(self):
         self.pack(fill=BOTH, expand=TRUE)
         self.mainloop()
+
+    def __add__(self):
+        self.place(x=self.x, y=self.y)

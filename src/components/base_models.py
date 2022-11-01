@@ -26,6 +26,7 @@ class PWidget(Widget):
         self.Relief = GROOVE
         self.Command = None
         self.State = NORMAL
+        self.Value = None
 
     def add(self, widget):
 
@@ -34,7 +35,10 @@ class PWidget(Widget):
 
         widget.master = self
 
-        widget.place(x=widget.x, y=widget.y)
+        widget.__add__()
+
+    def __add__(self):
+        pass
 
     def has_resource(self, resource_name: str) -> bool:
         try:
@@ -167,6 +171,15 @@ class PWidget(Widget):
     def State(self, value: Literal["normal", "disabled", "readonly"]):
         self._state = value
         self.set_resource('state', value)
+
+    @property
+    def Value(self):
+        return self._value.get()
+    
+    @Value.setter
+    def Value(self, value):
+        self._value = Variable(value=value)
+        self.set_resource('variable', self._value)
 
 class PMenuBase():
 
